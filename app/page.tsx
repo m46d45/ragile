@@ -10,14 +10,17 @@ export default function HomePage() {
           <Link href="/" className="text-xl font-bold text-primary">
             Ragil<span className="text-accent">E</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+          <nav className="flex items-center gap-3 md:gap-6 text-sm text-gray-600">
+            <Link href="/faq" className="hover:text-primary">
+              FAQ
+            </Link>
+            <Link href="/tanya" className="hover:text-primary">
+              Tanya
+            </Link>
             <Link href="/diagnosa" className="hover:text-primary">
               Diagnosa
             </Link>
-            <Link href="#metode" className="hover:text-primary">
-              Metode Kerja
-            </Link>
-            <Link href="#template" className="hover:text-primary">
+            <Link href="#template" className="hidden md:inline hover:text-primary">
               Template
             </Link>
             <Link
@@ -363,10 +366,22 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-2">Fitur</h4>
               <div className="space-y-1 text-sm opacity-70">
-                <p>Diagnosa</p>
-                <p>Metode Kerja</p>
+                <p>
+                  <Link href="/faq" className="hover:underline">
+                    FAQ
+                  </Link>
+                </p>
+                <p>
+                  <Link href="/tanya" className="hover:underline">
+                    Tanya bot
+                  </Link>
+                </p>
+                <p>
+                  <Link href="/diagnosa" className="hover:underline">
+                    Diagnosa
+                  </Link>
+                </p>
                 <p>Template</p>
-                <p>Daftar Pakar</p>
               </div>
             </div>
             <div>

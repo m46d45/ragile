@@ -1,0 +1,38 @@
+[
+  {
+    "id": "act-papan-tunggu",
+    "kode": "papan-tunggu",
+    "judul": "Papan nunggu di pos",
+    "isi_mandor": "Minggu ini cukup satu papan kecil di pos. Tiap pagi tulis: siapa/alat yang ditunggu, untuk pekerjaan apa, kira-kira sampai jam berapa. Coret kalau sudah datang. Bukan laporan ke mana-mana — supaya satu pos tidak nunggu diam-diam.",
+    "file_url": null,
+    "jenis_macet": ["tunggu_orang", "tunggu_alat"],
+    "tingkat": "L0"
+  },
+  {
+    "id": "act-titik-periksa",
+    "kode": "titik-periksa",
+    "judul": "Satu titik periksa sebelum lanjut",
+    "isi_mandor": "Pilih satu jenis kerja yang paling sering diulang. Sebelum lanjut ke langkah berikutnya, cek satu titik (rata / siku / bersih) dan foto dari tempat yang sama. Kalau tidak lolos, berhenti di situ. Ini kebiasaan, bukan sertifikat mutu.",
+    "file_url": null,
+    "jenis_macet": ["ulang_kerja"],
+    "tingkat": "L0"
+  },
+  {
+    "id": "act-lima-menit-pagi",
+    "kode": "lima-menit-pagi",
+    "judul": "Lima menit pagi: orang, alat, bahan",
+    "isi_mandor": "Sebelum mulai, lima menit. Tulis tiga kolom: orang yang harus ada, alat yang harus ada, bahan yang harus ada hari ini. Yang kosong = risiko nunggu. Kerjakan dulu yang lengkap. Tidak usah aplikasi.",
+    "file_url": null,
+    "jenis_macet": ["tunggu_orang", "tunggu_alat", "info_salah_terlambat"],
+    "tingkat": "L0"
+  },
+  {
+    "id": "act-satu-kebiasaan",
+    "kode": "satu-kebiasaan",
+    "judul": "Ubah satu kebiasaan minggu ini",
+    "isi_mandor": "Jangan perbaiki semua. Pilih satu yang paling macet minggu ini (nunggu atau ulang). Tulis di kertas: apa yang diubah, siapa yang ingat, kapan dicek lagi (hari Jumat). Kalau cuma mau cerita dulu, tidak wajib ubah.",
+    "file_url": null,
+    "jenis_macet": ["tunggu_orang", "tunggu_alat", "ulang_kerja", "info_salah_terlambat", "lain"],
+    "tingkat": "L0"
+  }
+]
