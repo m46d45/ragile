@@ -8,16 +8,19 @@ export default function HomePage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
           <Link href="/" className="text-xl font-bold text-primary">
-            Ragile<span className="text-accent">.</span>
+            Ragil<span className="text-accent">E</span>
           </Link>
-          <nav className="hidden md:flex items-center gap-6 text-sm text-gray-600">
+          <nav className="flex items-center gap-3 md:gap-6 text-sm text-gray-600">
+            <Link href="/faq" className="hover:text-primary">
+              FAQ
+            </Link>
+            <Link href="/tanya" className="hover:text-primary">
+              Tanya
+            </Link>
             <Link href="/diagnosa" className="hover:text-primary">
               Diagnosa
             </Link>
-            <Link href="#metode" className="hover:text-primary">
-              Metode Kerja
-            </Link>
-            <Link href="#template" className="hover:text-primary">
+            <Link href="#template" className="hidden md:inline hover:text-primary">
               Template
             </Link>
             <Link
@@ -44,9 +47,10 @@ export default function HomePage() {
                 Lebih Rapi & Efisien
               </h1>
               <p className="text-lg opacity-90 mb-8">
-                Ragile adalah klinik digital untuk metode kerja, manajemen
-                proyek, dan produksi. Diagnosa cara kerjamu, unduh template siap
-                pakai, dan dapatkan rekomendasi praktis — semuanya gratis.
+                RagilE (Ragil Elektronic) adalah klinik digital untuk metode
+                kerja, manajemen proyek, dan produksi. Diagnosa cara kerjamu,
+                unduh template siap pakai, dan dapatkan rekomendasi praktis —
+                semuanya gratis.
               </p>
               <div className="flex gap-3 flex-wrap">
                 <Link
@@ -81,7 +85,7 @@ export default function HomePage() {
       <section className="py-16">
         <div className="max-w-6xl mx-auto px-5">
           <h2 className="text-2xl font-bold text-primary text-center mb-3">
-            Mengapa Ragile?
+            Mengapa RagilE?
           </h2>
           <p className="text-gray-600 text-center max-w-lg mx-auto mb-10">
             Dibuat khusus untuk kontraktor kecil yang ingin cara kerja lebih
@@ -140,7 +144,7 @@ export default function HomePage() {
       <section className="py-16 bg-white" id="diagnosa">
         <div className="max-w-6xl mx-auto px-5">
           <h2 className="text-2xl font-bold text-primary text-center mb-3">
-            Cara Kerja Ragile
+            Cara Kerja RagilE
           </h2>
           <p className="text-gray-600 text-center max-w-lg mx-auto mb-10">
             Empat langkah sederhana untuk mulai memperbaiki cara kerja di
@@ -353,19 +357,31 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-5">
           <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div>
-              <h4 className="font-semibold mb-2">Ragile</h4>
+              <h4 className="font-semibold mb-2">RagilE</h4>
               <p className="text-sm opacity-70">
-                Klinik digital metode kerja, manajemen proyek, dan produksi
-                untuk kontraktor kecil.
+                Ragil Elektronic — klinik digital metode kerja, manajemen
+                proyek, dan produksi untuk kontraktor kecil.
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-2">Fitur</h4>
               <div className="space-y-1 text-sm opacity-70">
-                <p>Diagnosa</p>
-                <p>Metode Kerja</p>
+                <p>
+                  <Link href="/faq" className="hover:underline">
+                    FAQ
+                  </Link>
+                </p>
+                <p>
+                  <Link href="/tanya" className="hover:underline">
+                    Tanya bot
+                  </Link>
+                </p>
+                <p>
+                  <Link href="/diagnosa" className="hover:underline">
+                    Diagnosa
+                  </Link>
+                </p>
                 <p>Template</p>
-                <p>Daftar Pakar</p>
               </div>
             </div>
             <div>
@@ -382,7 +398,7 @@ export default function HomePage() {
             </div>
           </div>
           <div className="border-t border-white/15 pt-5 text-center text-sm opacity-60">
-            © 2026 Ragile. Semua hak dilindungi.
+            © 2026 RagilE. Semua hak dilindungi.
           </div>
         </div>
       </footer>

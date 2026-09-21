@@ -1,4 +1,4 @@
-# Ragile
+# RagilE — Ragil Elektronic
 
 Klinik digital metode kerja, manajemen proyek, dan manajemen produksi untuk kontraktor kecil.
 
@@ -35,14 +35,11 @@ Salin `.env.example` menjadi `.env.local`:
 cp .env.example .env.local
 ```
 
-Isi nilai dari **Vercel Dashboard → Storage → Postgres**:
+Isi nilai dari **Vercel Dashboard → Storage → Postgres** (opsional di prototype) dan kunci AI:
 
-- `POSTGRES_URL`
-- `POSTGRES_URL_NON_POOLING`
-- `POSTGRES_USER`
-- `POSTGRES_HOST`
-- `POSTGRES_PASSWORD`
-- `POSTGRES_DATABASE`
+- `AI_API_KEY`, `AI_API_BASE`, `AI_MODEL` — bot / draf WA
+- `POSTGRES_URL` (dan variabel Neon/Vercel lain) — jika DB sudah siap
+- `INTERNAL_PASS` — kunci halaman `/internal/*` (kosong = terbuka di prototype)
 
 ### 3. Setup Database
 
@@ -63,33 +60,41 @@ Buka [http://localhost:3000](http://localhost:3000)
 ```
 ragile/
 ├── app/
-│   ├── page.tsx              # Landing Page
-│   ├── diagnosa/page.tsx     # Halaman Diagnosa
-│   ├── layout.tsx
-│   └── globals.css
-├── components/               # Komponen reusable
-├── lib/
-│   └── db.ts                 # Koneksi Vercel Postgres
-├── types/
-│   └── index.ts              # TypeScript types
-├── public/
-├── .env.example
-├── package.json
-└── README.md
+│   ├── page.tsx
+│   ├── faq/ page.tsx
+│   ├── tanya/ page.tsx
+│   ├── diagnosa/ page.tsx
+│   ├── internal/ antrian, kajian, riset
+│   └── api/ bot + internal
+├── components/
+├── data/ faq.json, action_bank.json
+├── lib/ clinic, ai, store
+├── types/index.ts
+├── ragile_database_schema.sql
+└── .env.example
 ```
 
 ---
 
-## Fitur MVP (Rencana)
+## Lapisan layanan
+
+1. **Umum (tanpa login)** — [FAQ](/faq) + bot minimal [Tanya](/tanya) (AI API jika `AI_API_KEY` ada; kalau tidak, jawab dari FAQ/tip). FAQ awal hanya benih: pertanyaan baru yang belum pas masuk calon di `/internal/faq`, baru terbit setelah ditinjau.
+2. **WhatsApp asinkron** — tidak auto-balas. `/internal/antrian`: tempel WA → draf AI **atau** bahas tim → Anda setujui → salin manual.
+3. **Kajian → konsultansi** — L2/L3 atau yang dinaikkan masuk `/internal/kajian`. Dikaji dulu, baru konsultansi.
+4. **Riset** — setiap masalah masuk `problem_bank` (kode: jenis macet, sering, saat, tingkat, alur). Identitas/WA terpisah. Ekspor hanya `izin_anonim=ya` di `/internal/riset`.
+
+## Fitur MVP
 
 - [x] Landing Page
 - [x] Diagnosa (kerangka + branching)
-- [ ] Knowledge Base
-- [ ] Template & Tools
-- [ ] Chatbot AI
+- [x] FAQ publik + mekanisme tumbuh (calon → tinjau → terbit)
+- [x] Bot minimal (AI API + fallback FAQ)
+- [x] Antrian WA (draf AI / bahas tim / OK manual)
+- [x] Kajian L2–L3 lalu konsultansi
+- [x] Problem bank terstruktur + ekspor riset
+- [ ] Template file unduhan
+- [ ] WA Business API (Tahap 2)
 - [ ] Daftar Member (form → database)
-- [ ] Daftar Pakar
-- [ ] Public / Private Q&A
 
 ---
 
@@ -102,4 +107,4 @@ ragile/
 
 ---
 
-© 2026 Ragile
+© 2026 RagilE (Ragil Elektronic)

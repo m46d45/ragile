@@ -1,0 +1,82 @@
+[
+  {
+    "id": "faq-bayar",
+    "slug": "ini-bayar",
+    "pertanyaan": "Ini bayar?",
+    "jawaban": "Sekarang tidak bayar (cerita + yang bisa dicoba minggu ini). Kalau nanti butuh dampingan lebih lanjut, itu baru berbayar — bisa dibicarakan terpisah.",
+    "tags": ["bayar", "awal"],
+    "urutan": 1
+  },
+  {
+    "id": "faq-bos",
+    "slug": "dikasih-ke-bos",
+    "pertanyaan": "Dikasih ke bos proyek?",
+    "jawaban": "Tidak. Cerita Anda tidak kami teruskan.",
+    "tags": ["rahasia", "awal"],
+    "urutan": 2
+  },
+  {
+    "id": "faq-daftar",
+    "slug": "harus-daftar",
+    "pertanyaan": "Harus daftar?",
+    "jawaban": "Tidak. Cerita dulu saja; daftar belakangan kalau mau.",
+    "tags": ["daftar", "awal"],
+    "urutan": 3
+  },
+  {
+    "id": "faq-apa-itu",
+    "slug": "apa-itu-ragile",
+    "pertanyaan": "Apa itu RagilE?",
+    "jawaban": "RagilE (Ragil Elektronic) adalah klinik cara kerja lapangan untuk kontraktor kecil. Tempat cerita kalau kerja sering nunggu orang/alat, atau hasil harus diulang. Bukan jual software, bukan audit, bukan sertifikat SBU.",
+    "tags": ["umum", "ragile"],
+    "urutan": 4
+  },
+  {
+    "id": "faq-bukan-klaim",
+    "slug": "apakah-ini-audit",
+    "pertanyaan": "Apakah ini audit atau bisa dapat sertifikat?",
+    "jawaban": "Bukan. Hasilnya milik Anda, bukan laporan ke siapa pun. Kami tidak menerbitkan sertifikat, tidak menilai SBU, dan tidak janji hemat biaya. Yang kami bantu: cara kerja di lapangan lebih rapi, selangkah.",
+    "tags": ["umum", "non-klaim"],
+    "urutan": 5
+  },
+  {
+    "id": "faq-tunggu",
+    "slug": "kerja-sering-nunggu",
+    "pertanyaan": "Kerja sering nunggu orang atau alat. Mulai dari mana?",
+    "jawaban": "Biasanya macet karena pagi tidak jelas siapa datang, alat di mana, bahan apa yang siap. Coba satu kebiasaan minggu ini: papan kecil di pos — tulis siapa yang ditunggu dan untuk pekerjaan apa. Bukan sistem besar. Kalau ini sering terjadi dan menumpuk di beberapa lokasi, lebih baik cerita via WhatsApp supaya dibahas, bukan dijawab bot saja.",
+    "tags": ["tunggu_orang", "tunggu_alat", "L0"],
+    "urutan": 6
+  },
+  {
+    "id": "faq-ulang",
+    "slug": "kerja-harus-diulang",
+    "pertanyaan": "Hasil kerja sering harus diulang. Apa yang bisa dicoba?",
+    "jawaban": "Ulang kerja sering ketahuan terlambat — menjelang selesai. Coba satu titik periksa sebelum lanjut: foto atau tanda sederhana (rata, siku, bersih) di pekerjaan yang paling sering diulang. Ini tip lapangan, bukan jaminan mutu. Kalau pola ini berulang di banyak hari atau banyak orang, kirim cerita ke WhatsApp.",
+    "tags": ["ulang_kerja", "L0"],
+    "urutan": 7
+  },
+  {
+    "id": "faq-bot-wa",
+    "slug": "bot-dan-whatsapp",
+    "pertanyaan": "Apa bedanya FAQ, bot, dan WhatsApp?",
+    "jawaban": "FAQ dan bot web untuk pertanyaan singkat, belajar sendiri. Bot memakai AI tapi tetap berpijak pada FAQ dan tip yang sudah ada. WhatsApp untuk cerita lebih dalam. WA tidak dibalas otomatis: asisten AI atau tim menyusun draf, baru dikirim setelah disetujui. Atau tim bahas dulu. Yang lebih rumit masuk kajian, baru konsultansi.",
+    "tags": ["bot", "whatsapp", "alur"],
+    "urutan": 8
+  },
+  {
+    "id": "faq-data",
+    "slug": "data-saya-dipakai-untuk-apa",
+    "pertanyaan": "Data cerita saya dipakai untuk apa?",
+    "jawaban": "Kami simpan masalahnya (tunggu/ulang, sering atau tidak, kapan ketahuan) supaya bantuan berikutnya lebih membumi. Nama dan nomor WhatsApp tidak dicampur ke berkas riset. Setelah dibantu, boleh ditanya izin simpan cerita tanpa nama — mudah ditolak, tetap dibantu kalau tidak setuju.",
+    "tags": ["data", "riset", "izin"],
+    "urutan": 9
+  },
+  {
+    "id": "faq-kajian",
+    "slug": "kapan-kajian-dan-konsultansi",
+    "pertanyaan": "Kapan masuk kajian atau konsultansi?",
+    "jawaban": "Kalau masalahnya mirip tip yang ada, cukup tip + draf. Kalau konteks baru, antri dibahas. Kalau menumpuk lintas hari, orang, atau lokasi — atau kelihatan pola metode baru — masuk kajian lebih dalam. Konsultansi menyusul setelah kajian, bukan langsung dari bot.",
+    "tags": ["kajian", "konsultansi", "L2", "L3"],
+    "urutan": 10
+  }
+]
