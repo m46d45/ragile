@@ -32,14 +32,31 @@ export function findFaqMatches(text: string, limit = 3): FaqItem[] {
     const hay = `${item.pertanyaan} ${item.jawaban} ${item.tags.join(" ")}`.toLowerCase();
     let score = 0;
     for (const word of q.split(/\W+/).filter((w) => w.length > 3)) {
-      if (hay.includes(word)) score += 1;
+      if (item.pertanyaan.toLowerCase().includes(word)) score += 2;
+      else if (hay.includes(word)) score += 1;
     }
-    if (q.includes("tunggu") && hay.includes("tunggu")) score += 3;
-    if ((q.includes("ulang") || q.includes("diulang")) && hay.includes("ulang")) {
-      score += 3;
+    if (q.includes("tunggu") || q.includes("nunggu")) {
+      if (item.tags.includes("tunggu_orang") || item.tags.includes("tunggu_alat")) {
+        score += 5;
+      }
+    }
+    if (q.includes("ulang") || q.includes("diulang") || q.includes("bongkar")) {
+      if (item.tags.includes("ulang_kerja")) score += 5;
     }
     if (q.includes("audit") || q.includes("sertifikat") || q.includes("sbu")) {
       if (item.slug === "apakah-ini-audit") score += 5;
+    }
+    if (
+      (q.includes("whatsapp") || q.includes("bot") || q.includes("faq")) &&
+      item.slug === "bot-dan-whatsapp"
+    ) {
+      score += 5;
+    }
+    if (
+      (q.includes("data") || q.includes("riset") || q.includes("nama")) &&
+      item.slug === "data-saya-dipakai-untuk-apa"
+    ) {
+      score += 4;
     }
     return { item, score };
   });
