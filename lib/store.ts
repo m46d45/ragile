@@ -1,8 +1,10 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { v4 as uuid } from "uuid";
+import { migrateDraftStatus, normalizeProblem } from "@/lib/clinic";
 import {
   FAQ_MATCH_THRESHOLD,
+  LOCKED_FAQ_IDS,
   findSimilarUsulan,
   hydrateFaqFromSeed,
   scoreFaqItems,
@@ -72,10 +74,15 @@ async function ensureLoaded() {
     const parsed = JSON.parse(raw) as Partial<ClinicStore>;
     b.data = {
       members: parsed.members || [],
-      problems: parsed.problems || [],
+      problems: (parsed.problems || []).map((p) =>
+        normalizeProblem(p as unknown as Record<string, unknown>)
+      ),
       conversations: parsed.conversations || [],
       messages: parsed.messages || [],
-      drafts: parsed.drafts || [],
+      drafts: (parsed.drafts || []).map((d) => ({
+        ...d,
+        status: migrateDraftStatus(d.status),
+      })),
       faqs: parsed.faqs || [],
       faq_usulan: parsed.faq_usulan || [],
     };
@@ -85,16 +92,38 @@ async function ensureLoaded() {
   if (!b.data.faqs) b.data.faqs = [];
   if (!b.data.faq_usulan) b.data.faq_usulan = [];
   const seed = hydrateFaqFromSeed();
+  const seedIds = new Set(seed.map((s) => s.id));
   if (b.data.faqs.length === 0) {
     b.data.faqs = seed;
     await persist();
   } else {
-    const punya = new Set(b.data.faqs.map((f) => f.id));
-    const kurang = seed.filter((s) => !punya.has(s.id));
-    if (kurang.length) {
-      b.data.faqs = [...b.data.faqs, ...kurang];
-      await persist();
+    const byId = new Map(b.data.faqs.map((f) => [f.id, f]));
+    for (const s of seed) {
+      const existing = byId.get(s.id);
+      if (!existing) {
+        b.data.faqs.push(s);
+        continue;
+      }
+      if (existing.asal === "seed") {
+        existing.pertanyaan = s.pertanyaan;
+        existing.jawaban = s.jawaban;
+        existing.tags = s.tags;
+        existing.urutan = s.urutan;
+        existing.slug = s.slug;
+        existing.locked = s.locked;
+        existing.is_published = true;
+      }
     }
+    for (const f of b.data.faqs) {
+      if (f.asal === "seed" && !seedIds.has(f.id)) {
+        f.is_published = false;
+      }
+      if (LOCKED_FAQ_IDS.includes(f.id)) {
+        f.locked = true;
+        f.is_published = true;
+      }
+    }
+    await persist();
   }
   b.loaded = true;
 }
@@ -363,6 +392,19 @@ export async function updateFaq(id: string, patch: Partial<FaqItem>) {
   await ensureLoaded();
   const row = bucket().data.faqs.find((f) => f.id === id);
   if (!row) return null;
+  if (row.locked || LOCKED_FAQ_IDS.includes(row.id)) {
+    const rest: Partial<FaqItem> = { ...patch };
+    delete rest.is_published;
+    delete rest.pertanyaan;
+    delete rest.jawaban;
+    Object.assign(row, rest, {
+      locked: true,
+      is_published: true,
+      updated_at: new Date().toISOString(),
+    });
+    await persist();
+    return row;
+  }
   Object.assign(row, patch, { updated_at: new Date().toISOString() });
   await persist();
   return row;

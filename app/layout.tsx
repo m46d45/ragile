@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "RagilE — Ragil Elektronic | Klinik Cara Kerja untuk Kontraktor Kecil",
+  title: "RagilE — cerita lapangan untuk kontraktor kecil",
   description:
-    "RagilE (Ragil Elektronic) membantu kontraktor kecil memperbaiki metode kerja, manajemen proyek, dan produksi di lapangan. Diagnosa gratis, template siap pakai, dan dukungan praktis.",
+    "Kalau di lokasi sering nunggu orang atau alat, atau kerja harus dikerjakan ulang — cerita saja di sini. Nanti dibantu cari yang bisa dicoba minggu ini.",
 };
 
 export default function RootLayout({

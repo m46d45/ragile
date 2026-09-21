@@ -175,14 +175,18 @@ export default function InternalFaqPage() {
             </div>
             <p className="font-medium text-sm text-primary">{f.pertanyaan}</p>
             <p className="text-sm text-gray-700 mt-1">{f.jawaban}</p>
-            <button
-              onClick={() =>
-                aksi({ action: "simpan", id: f.id, is_published: !f.is_published })
-              }
-              className="mt-3 border px-3 py-1.5 rounded-lg text-xs"
-            >
-              {f.is_published ? "Sembunyikan dari publik" : "Terbitkan lagi"}
-            </button>
+            {f.locked ? (
+              <p className="mt-3 text-xs text-gray-500">Terkunci F0 — tidak diubah dari sini.</p>
+            ) : (
+              <button
+                onClick={() =>
+                  aksi({ action: "simpan", id: f.id, is_published: !f.is_published })
+                }
+                className="mt-3 border px-3 py-1.5 rounded-lg text-xs"
+              >
+                {f.is_published ? "Sembunyikan dari publik" : "Terbitkan lagi"}
+              </button>
+            )}
           </article>
         ))}
       </div>

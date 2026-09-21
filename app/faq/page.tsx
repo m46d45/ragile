@@ -1,15 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
-import { NON_KLAIM } from "@/lib/clinic";
 import { listPublishedFaqs } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Yang sering ditanya — RagilE",
-  description:
-    "Pertanyaan singkat yang sudah ada jawabannya. Daftar ini bertambah setelah ditinjau.",
+  description: "Bayar? Ke bos? Harus daftar? Jawaban singkat.",
 };
 
 export default async function FaqPage() {
@@ -24,9 +23,8 @@ export default async function FaqPage() {
         </p>
         <h1 className="text-2xl font-bold text-primary mb-2">Yang sering ditanya</h1>
         <p className="text-sm text-gray-600 mb-8">
-          Daftar awal, akan bertambah kalau banyak yang bertanya hal yang sama.
-          {` ${NON_KLAIM} `}
-          Belum ada di sini? Tanya singkat atau cerita lewat WhatsApp.
+          Cerita Anda tidak kami teruskan ke orang lain. Belum ada di sini?
+          Tanya singkat atau cerita lewat WhatsApp.
         </p>
         <div className="space-y-4">
           {items.map((item) => (
@@ -45,9 +43,14 @@ export default async function FaqPage() {
           <Link href="/tanya" className="text-accent font-semibold">
             Tanya singkat
           </Link>
-          . Kalau ceritanya panjang, lebih baik WhatsApp.
+          {" · "}
+          <Link href="/diagnosa" className="text-accent font-semibold">
+            Cerita lapangan
+          </Link>
+          .
         </p>
       </main>
+      <SiteFooter />
     </div>
   );
 }

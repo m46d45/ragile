@@ -34,6 +34,7 @@ export async function POST(req: NextRequest) {
   const jalur = body?.jalur === "bahas_tim" ? "bahas_tim" : "ai_draf";
   const whatsapp = String(body?.whatsapp || "").trim() || null;
   const nama = String(body?.nama || "").trim() || "Kontraktor WA";
+  const referral_dari = String(body?.referral_dari || "").trim() || null;
 
   if (teks.length < 2) {
     return NextResponse.json({ error: "Tempel isi WA masuk." }, { status: 400 });
@@ -79,10 +80,10 @@ export async function POST(req: NextRequest) {
   }
 
   const problem = await addProblem({
-    sumber_masuk: "WA_langsung",
+    sumber_masuk: referral_dari ? "referral" : "WA_langsung",
     channel: "whatsapp",
-    jenis_macet: coded.jenis_macet,
-    jenis_macet_lain: coded.jenis_macet_lain ?? null,
+    jenis_hambatan: coded.jenis_hambatan,
+    jenis_hambatan_lain: coded.jenis_hambatan_lain ?? null,
     sering: coded.sering,
     saat_ketahuan: coded.saat_ketahuan,
     niat_ubah: coded.niat_ubah,
@@ -110,6 +111,8 @@ export async function POST(req: NextRequest) {
     member_id: memberId,
     conversation_id: conversation.id,
     coded_by: "ai",
+    referral_dari,
+    lampiran_skor: "belum_terlihat",
   });
 
   const draft = await addDraft({
@@ -119,7 +122,7 @@ export async function POST(req: NextRequest) {
     draf_ai: draf,
     draf_final: draf,
     jalur,
-    status: jalur === "bahas_tim" ? "ditahan_tim" : "menunggu_ok",
+    status: "usul",
     catatan_tim: null,
   });
 

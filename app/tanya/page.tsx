@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 
 type ChatItem = { role: "user" | "assistant"; text: string };
@@ -76,13 +77,13 @@ export default function TanyaPage() {
       <SiteHeader current="/tanya" />
       <main className="max-w-2xl mx-auto px-5 py-8 flex-1 w-full">
         <p className="text-xs font-medium text-accent uppercase tracking-wide mb-2">
-          Bot minimal
+          Tanya singkat
         </p>
         <h1 className="text-2xl font-bold text-primary mb-2">Tanya singkat</h1>
         <p className="text-sm text-gray-600 mb-6">
-          AI menjawab dari FAQ dan tip lapangan. Bukan audit, bukan sertifikat,
-          bukan janji hemat biaya. Cerita dalam lewat WhatsApp — draf dulu,
-          baru dikirim setelah disetujui, atau dibahas tim.
+          Pertanyaan pendek dari yang sering ditanya. Cerita dalam lewat
+          WhatsApp — draf dulu, baru dikirim setelah OK Abduh. Cerita Anda
+          tidak kami teruskan ke orang lain.
         </p>
 
         <div className="space-y-3 mb-6">
@@ -111,7 +112,7 @@ export default function TanyaPage() {
 
         {via && (
           <p className="text-xs text-gray-500 mb-3">
-            Sumber jawaban: {via === "ai" ? "asisten AI" : "FAQ / tip (AI belum tersambung)"}
+            Sumber jawaban: {via === "ai" ? "asisten" : "yang sering ditanya"}
           </p>
         )}
 
@@ -173,6 +174,7 @@ export default function TanyaPage() {
           </button>
         </div>
       </main>
+      <SiteFooter />
     </div>
   );
 }

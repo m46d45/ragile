@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     const updated = await updateDraft(draft.id, {
       draf_final: String(body?.draf_final || draft.draf_final || ""),
       catatan_tim: body?.catatan_tim ?? draft.catatan_tim,
-      status: "revisi",
+      status: "usul",
     });
     return NextResponse.json({ draft: updated });
   }
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     const finalText = String(body?.draf_final || draft.draf_final || draft.draf_ai || "");
     const updated = await updateDraft(draft.id, {
       draf_final: finalText,
-      status: "disetujui",
+      status: "ok_abduh",
       decided_at: now,
       decided_by: String(body?.decided_by || "Abduh"),
     });
@@ -41,7 +41,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
     await setAlur(draft.problem_id, "menunggu_ok");
     return NextResponse.json({
       draft: updated,
-      note: "Disetujui. Salin ke WhatsApp secara manual. Sistem tidak mengirim sendiri.",
+      note: "OK Abduh. Salin ke WhatsApp secara manual. Sistem tidak mengirim sendiri.",
     });
   }
 
@@ -54,11 +54,23 @@ export async function POST(req: NextRequest, { params }: Ctx) {
   if (action === "bahas") {
     const updated = await updateDraft(draft.id, {
       jalur: "bahas_tim",
-      status: "ditahan_tim",
+      status: "usul",
       catatan_tim: String(body?.catatan_tim || draft.catatan_tim || ""),
     });
     await setAlur(draft.problem_id, "bahas_tim");
     return NextResponse.json({ draft: updated });
+  }
+
+  if (action === "tingkat") {
+    const tingkat = String(body?.tingkat || "");
+    if (!["L0", "L1", "L2", "L3"].includes(tingkat)) {
+      return NextResponse.json({ error: "Tingkat L0–L3." }, { status: 400 });
+    }
+    const problem = await updateProblem(draft.problem_id, {
+      tingkat: tingkat as "L0" | "L1" | "L2" | "L3",
+      tingkat_alasan: String(body?.tingkat_alasan || "Diatur di antrian."),
+    });
+    return NextResponse.json({ draft, problem });
   }
 
   if (action === "kajian") {
@@ -68,7 +80,7 @@ export async function POST(req: NextRequest, { params }: Ctx) {
       lintas_lokasi: Boolean(body?.lintas_lokasi),
       lintas_orang: Boolean(body?.lintas_orang),
     });
-    const updated = await updateDraft(draft.id, { status: "ditahan_tim" });
+    const updated = await updateDraft(draft.id, { status: "usul" });
     return NextResponse.json({ draft: updated });
   }
 

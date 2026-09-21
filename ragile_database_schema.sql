@@ -1,4 +1,4 @@
--- RagilE (Ragil Elektronic) — skema v1
+-- RagilE (Ragil Electronic) — skema v1 + F0
 -- Identitas terpisah dari ekspor riset.
 -- Setiap masalah tetap masuk problem_bank, termasuk jika izin ditolak.
 
@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS faq_items (
   is_published BOOLEAN NOT NULL DEFAULT TRUE,
   asal TEXT NOT NULL DEFAULT 'seed' CHECK (asal IN ('seed', 'usulan')),
   kali_dipakai INTEGER NOT NULL DEFAULT 0,
+  locked BOOLEAN NOT NULL DEFAULT FALSE,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   published_at TIMESTAMPTZ
@@ -34,10 +35,12 @@ CREATE TABLE IF NOT EXISTS faq_items (
 CREATE TABLE IF NOT EXISTS action_bank (
   id UUID PRIMARY KEY,
   kode TEXT NOT NULL UNIQUE,
+  nomor INTEGER NOT NULL DEFAULT 0,
+  slug TEXT NOT NULL UNIQUE,
   judul TEXT NOT NULL,
   isi_mandor TEXT NOT NULL,
   file_url TEXT,
-  jenis_macet TEXT[] NOT NULL DEFAULT '{}',
+  jenis_hambatan TEXT[] NOT NULL DEFAULT '{}',
   tingkat TEXT NOT NULL DEFAULT 'L0',
   is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
@@ -70,12 +73,13 @@ CREATE TABLE IF NOT EXISTS problem_bank (
     )
   ),
   channel TEXT NOT NULL CHECK (channel IN ('web', 'whatsapp', 'event', 'lain')),
-  jenis_macet TEXT NOT NULL CHECK (
-    jenis_macet IN (
-      'tunggu_orang', 'tunggu_alat', 'ulang_kerja', 'info_salah_terlambat', 'lain'
+  jenis_hambatan TEXT NOT NULL CHECK (
+    jenis_hambatan IN (
+      'nunggu_orang', 'nunggu_alat', 'ulang_kerja',
+      'info_salah_terlambat', 'nunggu_serah_terima', 'lain'
     )
   ),
-  jenis_macet_lain TEXT,
+  jenis_hambatan_lain TEXT,
   sering TEXT NOT NULL CHECK (sering IN ('sering', 'sekali_sekali', 'belum_jelas')),
   saat_ketahuan TEXT NOT NULL CHECK (
     saat_ketahuan IN ('pagi', 'tengah_hari', 'menjelang_selesai', 'belum_jelas')
@@ -112,13 +116,17 @@ CREATE TABLE IF NOT EXISTS problem_bank (
   member_id UUID REFERENCES members (id),
   conversation_id UUID REFERENCES conversations (id),
   coded_by TEXT NOT NULL CHECK (coded_by IN ('ai', 'tim')),
-  reviewed_at TIMESTAMPTZ
+  reviewed_at TIMESTAMPTZ,
+  referral_dari TEXT,
+  lampiran_skor TEXT NOT NULL DEFAULT 'belum_terlihat' CHECK (
+    lampiran_skor IN ('terlihat', 'belum_terlihat')
+  )
 );
 
 CREATE INDEX IF NOT EXISTS problem_bank_tingkat_idx ON problem_bank (tingkat);
 CREATE INDEX IF NOT EXISTS problem_bank_status_idx ON problem_bank (status_alur);
 CREATE INDEX IF NOT EXISTS problem_bank_izin_idx ON problem_bank (izin_anonim);
-CREATE INDEX IF NOT EXISTS problem_bank_jenis_idx ON problem_bank (jenis_macet);
+CREATE INDEX IF NOT EXISTS problem_bank_jenis_idx ON problem_bank (jenis_hambatan);
 
 CREATE TABLE IF NOT EXISTS faq_usulan (
   id UUID PRIMARY KEY,
@@ -147,10 +155,7 @@ CREATE TABLE IF NOT EXISTS wa_drafts (
   draf_final TEXT,
   jalur TEXT NOT NULL CHECK (jalur IN ('ai_draf', 'bahas_tim')),
   status TEXT NOT NULL CHECK (
-    status IN (
-      'menunggu_draf', 'menunggu_ok', 'revisi',
-      'disetujui', 'ditahan_tim', 'terkirim'
-    )
+    status IN ('usul', 'ok_abduh', 'terkirim')
   ),
   catatan_tim TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -158,15 +163,14 @@ CREATE TABLE IF NOT EXISTS wa_drafts (
   decided_by TEXT
 );
 
--- Ekspor riset: hanya izin ya, tanpa identitas / WA / cerita mentah.
 CREATE OR REPLACE VIEW problem_bank_riset AS
 SELECT
   id,
   created_at,
   sumber_masuk,
   channel,
-  jenis_macet,
-  jenis_macet_lain,
+  jenis_hambatan,
+  jenis_hambatan_lain,
   sering,
   saat_ketahuan,
   niat_ubah,
@@ -180,6 +184,7 @@ SELECT
   tip_diterapkan,
   pola_berulang,
   lintas_lokasi,
-  lintas_orang
+  lintas_orang,
+  referral_dari
 FROM problem_bank
 WHERE izin_anonim = 'ya';
