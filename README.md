@@ -1,4 +1,4 @@
-# Ragile
+# RagilE — Ragil Elektronic
 
 Klinik digital metode kerja, manajemen proyek, dan manajemen produksi untuk kontraktor kecil.
 
@@ -102,4 +102,4 @@ ragile/
 
 ---
 
-© 2026 Ragile
+© 2026 RagilE (Ragil Elektronic)

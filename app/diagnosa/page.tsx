@@ -136,7 +136,7 @@ export default function DiagnosaPage() {
         <header className="bg-white border-b border-gray-200">
           <div className="max-w-2xl mx-auto px-5 h-14 flex items-center">
             <Link href="/" className="text-lg font-bold text-primary">
-              Ragile<span className="text-accent">.</span>
+              Ragil<span className="text-accent">E</span>
             </Link>
           </div>
         </header>
@@ -179,7 +179,7 @@ export default function DiagnosaPage() {
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-2xl mx-auto px-5 h-14 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold text-primary">
-            Ragile<span className="text-accent">.</span>
+            Ragil<span className="text-accent">E</span>
           </Link>
           <span className="text-sm text-gray-500">
             {step + 1} / {currentQuestions.length || QUESTIONS.length}
