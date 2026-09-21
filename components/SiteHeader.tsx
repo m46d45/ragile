@@ -18,7 +18,7 @@ export function SiteHeader({ current }: { current?: string }) {
         <nav className="flex items-center gap-3 sm:gap-5 text-sm text-gray-600">
           {item("/faq", "FAQ")}
           {item("/tanya", "Tanya")}
-          {item("/diagnosa", "Diagnosa")}
+          {item("/diagnosa", "Cek singkat")}
         </nav>
       </div>
     </header>

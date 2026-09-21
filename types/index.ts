@@ -34,14 +34,21 @@ export type SumberMasuk =
 
 export type ChannelMasuk = "web" | "whatsapp" | "event" | "lain";
 
-export type JenisMacet =
-  | "tunggu_orang"
-  | "tunggu_alat"
+/** Bank field. Nilai publik: nunggu/diulang — tanpa kata macet. */
+export type JenisHambatan =
+  | "nunggu_orang"
+  | "nunggu_alat"
   | "ulang_kerja"
   | "info_salah_terlambat"
+  | "nunggu_serah_terima"
   | "lain";
 
-export type SeringMacet = "sering" | "sekali_sekali" | "belum_jelas";
+/** @deprecated pakai JenisHambatan */
+export type JenisMacet = JenisHambatan;
+
+export type SeringHambatan = "sering" | "sekali_sekali" | "belum_jelas";
+/** @deprecated pakai SeringHambatan */
+export type SeringMacet = SeringHambatan;
 
 export type SaatKetahuan =
   | "pagi"
@@ -77,9 +84,9 @@ export interface ProblemRecord {
   updated_at: string;
   sumber_masuk: SumberMasuk;
   channel: ChannelMasuk;
-  jenis_macet: JenisMacet;
-  jenis_macet_lain?: string | null;
-  sering: SeringMacet;
+  jenis_hambatan: JenisHambatan;
+  jenis_hambatan_lain?: string | null;
+  sering: SeringHambatan;
   saat_ketahuan: SaatKetahuan;
   niat_ubah: NiatUbah;
   tingkat: TingkatEskalasi;
@@ -103,6 +110,9 @@ export interface ProblemRecord {
   conversation_id?: string | null;
   coded_by: CodedBy;
   reviewed_at?: string | null;
+  /** Opsional: "dari Pak/Bu X" */
+  referral_dari?: string | null;
+  lampiran_skor?: "terlihat" | "belum_terlihat";
 }
 
 /** Baris ekspor riset: tanpa WA, nama, cerita mentah, member_id. */
@@ -111,9 +121,9 @@ export interface ProblemRisetRow {
   created_at: string;
   sumber_masuk: SumberMasuk;
   channel: ChannelMasuk;
-  jenis_macet: JenisMacet;
-  jenis_macet_lain?: string | null;
-  sering: SeringMacet;
+  jenis_hambatan: JenisHambatan;
+  jenis_hambatan_lain?: string | null;
+  sering: SeringHambatan;
   saat_ketahuan: SaatKetahuan;
   niat_ubah: NiatUbah;
   tingkat: TingkatEskalasi;
@@ -127,6 +137,7 @@ export interface ProblemRisetRow {
   pola_berulang: boolean;
   lintas_lokasi: boolean;
   lintas_orang: boolean;
+  referral_dari?: string | null;
 }
 
 export type FaqAsal = "seed" | "usulan";
@@ -144,6 +155,7 @@ export interface FaqItem {
   created_at: string;
   updated_at: string;
   published_at?: string | null;
+  locked?: boolean;
 }
 
 export type StatusUsulanFaq =
@@ -175,10 +187,12 @@ export interface FaqUsulan {
 export interface ActionItem {
   id: string;
   kode: string;
+  nomor: number;
+  slug: string;
   judul: string;
   isi_mandor: string;
   file_url?: string | null;
-  jenis_macet: JenisMacet[];
+  jenis_hambatan: JenisHambatan[];
   tingkat: TingkatEskalasi;
 }
 
@@ -205,13 +219,8 @@ export interface Message {
   created_at: string;
 }
 
-export type StatusDraf =
-  | "menunggu_draf"
-  | "menunggu_ok"
-  | "revisi"
-  | "disetujui"
-  | "ditahan_tim"
-  | "terkirim";
+/** Alur publik internal: usul → OK Abduh → terkirim */
+export type StatusDraf = "usul" | "ok_abduh" | "terkirim";
 
 export interface WaDraft {
   id: string;
@@ -229,9 +238,9 @@ export interface WaDraft {
 }
 
 export interface BotCodedFields {
-  jenis_macet: JenisMacet;
-  jenis_macet_lain?: string | null;
-  sering: SeringMacet;
+  jenis_hambatan: JenisHambatan;
+  jenis_hambatan_lain?: string | null;
+  sering: SeringHambatan;
   saat_ketahuan: SaatKetahuan;
   niat_ubah: NiatUbah;
   tingkat: TingkatEskalasi;
@@ -239,4 +248,12 @@ export interface BotCodedFields {
   escalate_wa: boolean;
   action_kode?: string | null;
   ringkasan_lapangan: string;
+}
+
+export interface HasilPublik {
+  yang_kebaca: string;
+  cerita_aman: string;
+  aksi: ActionItem[];
+  tautan: { href: string; label: string }[];
+  lampiran_skor: "terlihat" | "belum_terlihat";
 }

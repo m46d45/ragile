@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
 
   const action = findAction(coded.action_kode);
   if (action && !reply.includes(action.judul)) {
-    reply += `\n\nTip: ${action.judul}. ${action.isi_mandor}`;
+    reply += `\n\nYang bisa dicoba: ${action.judul}. ${action.isi_mandor}`;
   }
 
   await addMessage({
@@ -80,8 +80,8 @@ export async function POST(req: NextRequest) {
   const problem = await addProblem({
     sumber_masuk: "web_bot",
     channel: "web",
-    jenis_macet: coded.jenis_macet,
-    jenis_macet_lain: coded.jenis_macet_lain ?? null,
+    jenis_hambatan: coded.jenis_hambatan,
+    jenis_hambatan_lain: coded.jenis_hambatan_lain ?? null,
     sering: coded.sering,
     saat_ketahuan: coded.saat_ketahuan,
     niat_ubah: coded.niat_ubah,
@@ -104,6 +104,8 @@ export async function POST(req: NextRequest) {
     member_id: null,
     conversation_id: conversation.id,
     coded_by: via === "ai" ? "ai" : "tim",
+    referral_dari: null,
+    lampiran_skor: "belum_terlihat",
   });
 
   const faqSignal = await recordIncomingQuestion({

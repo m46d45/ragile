@@ -63,7 +63,7 @@ export default function RisetPage() {
               <tr key={r.id} className="border-t">
                 <td className="p-2 whitespace-nowrap">{r.created_at.slice(0, 10)}</td>
                 <td className="p-2">{r.sumber_masuk}</td>
-                <td className="p-2">{r.jenis_macet}</td>
+                <td className="p-2">{r.jenis_hambatan}</td>
                 <td className="p-2">{r.sering}</td>
                 <td className="p-2">{r.saat_ketahuan}</td>
                 <td className="p-2">{r.tingkat}</td>

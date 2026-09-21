@@ -83,7 +83,7 @@ export default function KajianPage() {
               <div className="flex flex-wrap gap-2 text-xs mb-2">
                 <span className="bg-primary text-white px-2 py-0.5 rounded">{p.tingkat}</span>
                 <span className="bg-gray-100 px-2 py-0.5 rounded">{p.status_alur}</span>
-                <span className="bg-gray-100 px-2 py-0.5 rounded">{p.jenis_macet}</span>
+                <span className="bg-gray-100 px-2 py-0.5 rounded">{p.jenis_hambatan}</span>
                 <span className="bg-gray-100 px-2 py-0.5 rounded">{p.sering}</span>
                 <span className="bg-gray-100 px-2 py-0.5 rounded">{p.saat_ketahuan}</span>
               </div>

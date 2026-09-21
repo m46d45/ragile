@@ -4,6 +4,8 @@ import type { FaqItem, FaqUsulan, SumberUsulanFaq } from "@/types";
 export const FAQ_MATCH_THRESHOLD = 4;
 export const FAQ_USULAN_OVERLAP = 0.55;
 
+export const LOCKED_FAQ_IDS = ["faq-bayar", "faq-bos", "faq-daftar"];
+
 type SeedRow = {
   id: string;
   slug: string;
@@ -11,6 +13,7 @@ type SeedRow = {
   jawaban: string;
   tags: string[];
   urutan: number;
+  locked?: boolean;
 };
 
 export function hydrateFaqFromSeed(): FaqItem[] {
@@ -23,6 +26,7 @@ export function hydrateFaqFromSeed(): FaqItem[] {
     created_at: now,
     updated_at: now,
     published_at: now,
+    locked: Boolean(row.locked || LOCKED_FAQ_IDS.includes(row.id)),
   }));
 }
 
@@ -77,21 +81,19 @@ export function scoreFaqItems(
         if (item.slug === "harus-daftar") score += 6;
       }
       if (q.includes("tunggu") || q.includes("nunggu")) {
-        if (item.tags.includes("tunggu_orang") || item.tags.includes("tunggu_alat")) {
+        if (item.tags.includes("nunggu_orang") || item.tags.includes("nunggu_alat")) {
           score += 5;
         }
       }
       if (q.includes("ulang") || q.includes("diulang") || q.includes("bongkar")) {
         if (item.tags.includes("ulang_kerja")) score += 5;
       }
-      if (q.includes("audit") || q.includes("sertifikat") || q.includes("sbu")) {
-        if (item.slug === "apakah-ini-audit") score += 5;
-      }
       if (
-        (q.includes("whatsapp") || q.includes("bot") || q.includes("faq")) &&
-        item.slug === "bot-dan-whatsapp"
+        q.includes("diteruskan") ||
+        q.includes("rahasia") ||
+        (q.includes("cerita") && q.includes("orang lain"))
       ) {
-        score += 5;
+        if (item.slug === "cerita-diteruskan" || item.slug === "dikasih-ke-bos") score += 5;
       }
       return { item, score };
     })
