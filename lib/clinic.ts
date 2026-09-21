@@ -243,7 +243,10 @@ export function ringkas(
     lain: "Ada yang bikin kerja berhenti, belum masuk kotak nunggu atau diulang.",
   };
   const potong = text.replace(/\s+/g, " ").trim().slice(0, 160);
-  return potong ? `${label[jenis]} ${potong}`.trim() : label[jenis];
+  if (!potong) return label[jenis];
+  const dasar = label[jenis].toLowerCase();
+  if (dasar.includes(potong.toLowerCase()) || potong.length < 8) return label[jenis];
+  return `${label[jenis]} (${potong})`;
 }
 
 export function bangunHasilPublik(input: {
@@ -262,7 +265,7 @@ export function bangunHasilPublik(input: {
         ? " Sekali-sekali."
         : "";
   return {
-    yang_kebaca: `${ringkas(input.cerita || "", input.jenis, saat)}${seringTeks}`.trim(),
+    yang_kebaca: `${ringkas(input.cerita || "", input.jenis, saat)}${seringTeks}`.replace(/\s+/g, " ").trim(),
     cerita_aman: CERITA_AMAN,
     aksi,
     tautan: [
