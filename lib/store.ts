@@ -1,13 +1,24 @@
 import { promises as fs } from "fs";
 import path from "path";
 import { v4 as uuid } from "uuid";
+import {
+  FAQ_MATCH_THRESHOLD,
+  findSimilarUsulan,
+  hydrateFaqFromSeed,
+  scoreFaqItems,
+  slugify,
+  type FaqSignal,
+} from "@/lib/faq";
 import type {
   Conversation,
+  FaqItem,
+  FaqUsulan,
   IzinAnonim,
   Member,
   Message,
   ProblemRecord,
   StatusAlur,
+  SumberUsulanFaq,
   WaDraft,
 } from "@/types";
 
@@ -17,6 +28,8 @@ export type ClinicStore = {
   conversations: Conversation[];
   messages: Message[];
   drafts: WaDraft[];
+  faqs: FaqItem[];
+  faq_usulan: FaqUsulan[];
 };
 
 const emptyStore = (): ClinicStore => ({
@@ -25,6 +38,8 @@ const emptyStore = (): ClinicStore => ({
   conversations: [],
   messages: [],
   drafts: [],
+  faqs: [],
+  faq_usulan: [],
 });
 
 type GlobalStore = { data: ClinicStore; loaded: boolean };
@@ -45,7 +60,13 @@ function storePath() {
 
 async function ensureLoaded() {
   const b = bucket();
-  if (b.loaded) return;
+  if (b.loaded) {
+    if (!b.data.faq_usulan) b.data.faq_usulan = [];
+    if (!b.data.faqs || b.data.faqs.length === 0) {
+      b.data.faqs = hydrateFaqFromSeed();
+    }
+    return;
+  }
   try {
     const raw = await fs.readFile(storePath(), "utf8");
     const parsed = JSON.parse(raw) as Partial<ClinicStore>;
@@ -55,9 +76,25 @@ async function ensureLoaded() {
       conversations: parsed.conversations || [],
       messages: parsed.messages || [],
       drafts: parsed.drafts || [],
+      faqs: parsed.faqs || [],
+      faq_usulan: parsed.faq_usulan || [],
     };
   } catch {
     b.data = emptyStore();
+  }
+  if (!b.data.faqs) b.data.faqs = [];
+  if (!b.data.faq_usulan) b.data.faq_usulan = [];
+  const seed = hydrateFaqFromSeed();
+  if (b.data.faqs.length === 0) {
+    b.data.faqs = seed;
+    await persist();
+  } else {
+    const punya = new Set(b.data.faqs.map((f) => f.id));
+    const kurang = seed.filter((s) => !punya.has(s.id));
+    if (kurang.length) {
+      b.data.faqs = [...b.data.faqs, ...kurang];
+      await persist();
+    }
   }
   b.loaded = true;
 }
@@ -193,3 +230,169 @@ export async function listMessages(conversationId: string) {
   await ensureLoaded();
   return bucket().data.messages.filter((m) => m.conversation_id === conversationId);
 }
+
+export async function listPublishedFaqs() {
+  await ensureLoaded();
+  return bucket()
+    .data.faqs.filter((f) => f.is_published)
+    .sort((a, b) => a.urutan - b.urutan);
+}
+
+export async function listAllFaqs() {
+  await ensureLoaded();
+  return [...bucket().data.faqs].sort((a, b) => a.urutan - b.urutan);
+}
+
+export async function listFaqUsulan() {
+  await ensureLoaded();
+  return bucket().data.faq_usulan;
+}
+
+export async function recordIncomingQuestion(input: {
+  text: string;
+  sumber: SumberUsulanFaq;
+  problem_id?: string | null;
+}): Promise<FaqSignal> {
+  await ensureLoaded();
+  const published = bucket().data.faqs.filter((f) => f.is_published);
+  const ranked = scoreFaqItems(input.text, published);
+  const top = ranked[0];
+
+  if (top && top.score >= FAQ_MATCH_THRESHOLD) {
+    top.item.kali_dipakai += 1;
+    top.item.updated_at = new Date().toISOString();
+    await persist();
+    return { kind: "terjawab", score: top.score, faq: top.item };
+  }
+
+  const open = bucket().data.faq_usulan.filter(
+    (u) => u.status === "calon" || u.status === "ditinjau"
+  );
+  const existing = findSimilarUsulan(input.text, open);
+  const now = new Date().toISOString();
+
+  if (existing) {
+    existing.kali_muncul += 1;
+    existing.updated_at = now;
+    if (!existing.contoh_teks.includes(input.text)) {
+      existing.contoh_teks = [...existing.contoh_teks.slice(-4), input.text];
+    }
+    if (input.problem_id) existing.problem_id = input.problem_id;
+    await persist();
+    return { kind: "calon", score: top?.score || 0, usulan: existing, faq: top?.item };
+  }
+
+  const usulan: FaqUsulan = {
+    id: uuid(),
+    pertanyaan_mentah: input.text,
+    ringkasan: input.text.slice(0, 180),
+    sumber: input.sumber,
+    problem_id: input.problem_id ?? null,
+    status: "calon",
+    mirip_faq_id: top?.item.id ?? null,
+    faq_id: null,
+    kali_muncul: 1,
+    contoh_teks: [input.text],
+    catatan_tim: null,
+    created_at: now,
+    updated_at: now,
+  };
+  bucket().data.faq_usulan.unshift(usulan);
+  await persist();
+  return { kind: "calon", score: top?.score || 0, usulan, faq: top?.item };
+}
+
+export async function publishUsulan(input: {
+  usulan_id: string;
+  pertanyaan: string;
+  jawaban: string;
+  tags?: string[];
+}) {
+  await ensureLoaded();
+  const usulan = bucket().data.faq_usulan.find((u) => u.id === input.usulan_id);
+  if (!usulan) return null;
+  const now = new Date().toISOString();
+  const faq: FaqItem = {
+    id: uuid(),
+    slug: `${slugify(input.pertanyaan)}-${Date.now().toString(36)}`,
+    pertanyaan: input.pertanyaan.trim(),
+    jawaban: input.jawaban.trim(),
+    tags: input.tags || [],
+    urutan: bucket().data.faqs.length + 1,
+    is_published: true,
+    asal: "usulan",
+    kali_dipakai: usulan.kali_muncul,
+    created_at: now,
+    updated_at: now,
+    published_at: now,
+  };
+  bucket().data.faqs.push(faq);
+  usulan.status = "jadi_faq";
+  usulan.faq_id = faq.id;
+  usulan.updated_at = now;
+  await persist();
+  return { faq, usulan };
+}
+
+export async function mergeUsulan(usulan_id: string, faq_id: string) {
+  await ensureLoaded();
+  const usulan = bucket().data.faq_usulan.find((u) => u.id === usulan_id);
+  const faq = bucket().data.faqs.find((f) => f.id === faq_id);
+  if (!usulan || !faq) return null;
+  faq.kali_dipakai += usulan.kali_muncul;
+  faq.updated_at = new Date().toISOString();
+  usulan.status = "digabung";
+  usulan.faq_id = faq.id;
+  usulan.updated_at = faq.updated_at;
+  await persist();
+  return { faq, usulan };
+}
+
+export async function rejectUsulan(usulan_id: string, catatan?: string) {
+  await ensureLoaded();
+  const usulan = bucket().data.faq_usulan.find((u) => u.id === usulan_id);
+  if (!usulan) return null;
+  usulan.status = "ditolak";
+  usulan.catatan_tim = catatan ?? usulan.catatan_tim;
+  usulan.updated_at = new Date().toISOString();
+  await persist();
+  return usulan;
+}
+
+export async function updateFaq(id: string, patch: Partial<FaqItem>) {
+  await ensureLoaded();
+  const row = bucket().data.faqs.find((f) => f.id === id);
+  if (!row) return null;
+  Object.assign(row, patch, { updated_at: new Date().toISOString() });
+  await persist();
+  return row;
+}
+
+export async function addFaqManual(input: {
+  pertanyaan: string;
+  jawaban: string;
+  tags?: string[];
+  is_published?: boolean;
+}) {
+  await ensureLoaded();
+  const now = new Date().toISOString();
+  const published = input.is_published !== false;
+  const row: FaqItem = {
+    id: uuid(),
+    slug: `${slugify(input.pertanyaan)}-${Date.now().toString(36)}`,
+    pertanyaan: input.pertanyaan.trim(),
+    jawaban: input.jawaban.trim(),
+    tags: input.tags || [],
+    urutan: bucket().data.faqs.length + 1,
+    is_published: published,
+    asal: "usulan",
+    kali_dipakai: 0,
+    created_at: now,
+    updated_at: now,
+    published_at: published ? now : null,
+  };
+  bucket().data.faqs.push(row);
+  await persist();
+  return row;
+}
+

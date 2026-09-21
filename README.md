@@ -78,7 +78,7 @@ ragile/
 
 ## Lapisan layanan
 
-1. **Umum (tanpa login)** — [FAQ](/faq) + bot minimal [Tanya](/tanya) (AI API jika `AI_API_KEY` ada; kalau tidak, jawab dari FAQ/tip).
+1. **Umum (tanpa login)** — [FAQ](/faq) + bot minimal [Tanya](/tanya) (AI API jika `AI_API_KEY` ada; kalau tidak, jawab dari FAQ/tip). FAQ awal hanya benih: pertanyaan baru yang belum pas masuk calon di `/internal/faq`, baru terbit setelah ditinjau.
 2. **WhatsApp asinkron** — tidak auto-balas. `/internal/antrian`: tempel WA → draf AI **atau** bahas tim → Anda setujui → salin manual.
 3. **Kajian → konsultansi** — L2/L3 atau yang dinaikkan masuk `/internal/kajian`. Dikaji dulu, baru konsultansi.
 4. **Riset** — setiap masalah masuk `problem_bank` (kode: jenis macet, sering, saat, tingkat, alur). Identitas/WA terpisah. Ekspor hanya `izin_anonim=ya` di `/internal/riset`.
@@ -87,7 +87,7 @@ ragile/
 
 - [x] Landing Page
 - [x] Diagnosa (kerangka + branching)
-- [x] FAQ publik
+- [x] FAQ publik + mekanisme tumbuh (calon → tinjau → terbit)
 - [x] Bot minimal (AI API + fallback FAQ)
 - [x] Antrian WA (draf AI / bahas tim / OK manual)
 - [x] Kajian L2–L3 lalu konsultansi

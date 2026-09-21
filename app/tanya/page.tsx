@@ -24,6 +24,7 @@ export default function TanyaPage() {
   const [izinDone, setIzinDone] = useState(false);
   const [escalate, setEscalate] = useState(false);
   const [via, setVia] = useState<string | null>(null);
+  const [faqKind, setFaqKind] = useState<"terjawab" | "calon" | null>(null);
 
   useEffect(() => {
     sessionId();
@@ -54,6 +55,7 @@ export default function TanyaPage() {
       setProblemId(data.problemId || null);
       setEscalate(Boolean(data.escalateToWa));
       setVia(data.via);
+      setFaqKind(data.faq?.kind || null);
     } finally {
       setLoading(false);
     }
@@ -111,6 +113,14 @@ export default function TanyaPage() {
           <p className="text-xs text-gray-500 mb-3">
             Sumber jawaban: {via === "ai" ? "asisten AI" : "FAQ / tip (AI belum tersambung)"}
           </p>
+        )}
+
+        {faqKind === "calon" && (
+          <div className="bg-white border border-gray-200 rounded-xl p-4 text-sm text-gray-700 mb-4">
+            Pertanyaan ini belum ada di daftar yang sering ditanya. Kami simpan
+            untuk ditinjau. Kalau banyak yang tanya hal yang sama, nanti masuk
+            daftar.
+          </div>
         )}
 
         {escalate && (

@@ -129,6 +129,8 @@ export interface ProblemRisetRow {
   lintas_orang: boolean;
 }
 
+export type FaqAsal = "seed" | "usulan";
+
 export interface FaqItem {
   id: string;
   slug: string;
@@ -136,6 +138,38 @@ export interface FaqItem {
   jawaban: string;
   tags: string[];
   urutan: number;
+  is_published: boolean;
+  asal: FaqAsal;
+  kali_dipakai: number;
+  created_at: string;
+  updated_at: string;
+  published_at?: string | null;
+}
+
+export type StatusUsulanFaq =
+  | "calon"
+  | "ditinjau"
+  | "jadi_faq"
+  | "digabung"
+  | "ditolak";
+
+export type SumberUsulanFaq = "web_bot" | "whatsapp" | "manual";
+
+/** Pertanyaan yang belum / tidak pas di FAQ terbit. Menumpuk → jadi FAQ baru. */
+export interface FaqUsulan {
+  id: string;
+  pertanyaan_mentah: string;
+  ringkasan?: string | null;
+  sumber: SumberUsulanFaq;
+  problem_id?: string | null;
+  status: StatusUsulanFaq;
+  mirip_faq_id?: string | null;
+  faq_id?: string | null;
+  kali_muncul: number;
+  contoh_teks: string[];
+  catatan_tim?: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface ActionItem {

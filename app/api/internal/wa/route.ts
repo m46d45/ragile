@@ -9,6 +9,8 @@ import {
   addMessage,
   addProblem,
   getStore,
+  listPublishedFaqs,
+  recordIncomingQuestion,
 } from "@/lib/store";
 
 export async function GET(req: NextRequest) {
@@ -53,6 +55,7 @@ export async function POST(req: NextRequest) {
     content: teks,
   });
 
+  const published = await listPublishedFaqs();
   const coded = defaultCoded(teks);
   let draf: string | null = null;
 
@@ -60,18 +63,18 @@ export async function POST(req: NextRequest) {
     if (aiConfigured()) {
       try {
         const raw = await completeJson(
-          botSystemPrompt() +
+          botSystemPrompt(published) +
             "\n\nIni draf balasan WhatsApp. Jangan kirim sendiri. Manusia yang menyetujui.",
           `WA masuk:\n${teks}`
         );
         const parsed = parseBotJson(raw);
-        draf = parsed?.reply || fallbackReply(teks, coded);
+        draf = parsed?.reply || fallbackReply(teks, coded, published);
         if (parsed) Object.assign(coded, parsed);
       } catch {
-        draf = fallbackReply(teks, coded);
+        draf = fallbackReply(teks, coded, published);
       }
     } else {
-      draf = fallbackReply(teks, coded);
+      draf = fallbackReply(teks, coded, published);
     }
   }
 
@@ -120,5 +123,11 @@ export async function POST(req: NextRequest) {
     catatan_tim: null,
   });
 
-  return NextResponse.json({ draft, problem });
+  const faqSignal = await recordIncomingQuestion({
+    text: teks,
+    sumber: "whatsapp",
+    problem_id: problem.id,
+  });
+
+  return NextResponse.json({ draft, problem, faq: { kind: faqSignal.kind, score: faqSignal.score } });
 }

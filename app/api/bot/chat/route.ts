@@ -7,7 +7,14 @@ import {
   findAction,
   parseBotJson,
 } from "@/lib/clinic";
-import { addConversation, addMessage, addProblem, getStore } from "@/lib/store";
+import {
+  addConversation,
+  addMessage,
+  addProblem,
+  getStore,
+  listPublishedFaqs,
+  recordIncomingQuestion,
+} from "@/lib/store";
 
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
@@ -32,6 +39,7 @@ export async function POST(req: NextRequest) {
     content: text,
   });
 
+  const published = await listPublishedFaqs();
   let reply: string;
   let coded = defaultCoded(text);
   let via: "ai" | "faq" = "faq";
@@ -39,7 +47,7 @@ export async function POST(req: NextRequest) {
   if (aiConfigured()) {
     try {
       const raw = await completeJson(
-        botSystemPrompt(),
+        botSystemPrompt(published),
         `Pertanyaan kontraktor:\n${text}`
       );
       const parsed = parseBotJson(raw);
@@ -48,14 +56,14 @@ export async function POST(req: NextRequest) {
         coded = parsed;
         via = "ai";
       } else {
-        reply = fallbackReply(text, coded);
+        reply = fallbackReply(text, coded, published);
       }
     } catch {
-      reply = fallbackReply(text, coded);
+      reply = fallbackReply(text, coded, published);
       reply += "\n\n(Asisten AI sedang tidak tersambung. Jawaban dari FAQ/tip.)";
     }
   } else {
-    reply = fallbackReply(text, coded);
+    reply = fallbackReply(text, coded, published);
   }
 
   const action = findAction(coded.action_kode);
@@ -98,6 +106,12 @@ export async function POST(req: NextRequest) {
     coded_by: via === "ai" ? "ai" : "tim",
   });
 
+  const faqSignal = await recordIncomingQuestion({
+    text,
+    sumber: "web_bot",
+    problem_id: problem.id,
+  });
+
   return NextResponse.json({
     reply,
     via,
@@ -107,6 +121,11 @@ export async function POST(req: NextRequest) {
       ? { kode: action.kode, judul: action.judul, isi_mandor: action.isi_mandor }
       : null,
     problemId: problem.id,
+    faq: {
+      kind: faqSignal.kind,
+      score: faqSignal.score,
+      kali_muncul: faqSignal.usulan?.kali_muncul ?? null,
+    },
     izinPrompt: "Boleh kami simpan cerita ini tanpa nama, untuk belajar cara kerja lapangan? Mudah ditolak.",
   });
 }

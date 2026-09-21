@@ -1,5 +1,5 @@
-import faqSeed from "@/data/faq.json";
 import actionSeed from "@/data/action_bank.json";
+import { hydrateFaqFromSeed, scoreFaqItems } from "@/lib/faq";
 import type {
   ActionItem,
   BotCodedFields,
@@ -12,7 +12,7 @@ import type {
   TingkatEskalasi,
 } from "@/types";
 
-export const faqItems = faqSeed as FaqItem[];
+export const faqItems = hydrateFaqFromSeed();
 export const actionItems = actionSeed as ActionItem[];
 
 export const NON_KLAIM =
@@ -26,43 +26,12 @@ const JENIS: JenisMacet[] = [
   "lain",
 ];
 
-export function findFaqMatches(text: string, limit = 3): FaqItem[] {
-  const q = text.toLowerCase();
-  const scored = faqItems.map((item) => {
-    const hay = `${item.pertanyaan} ${item.jawaban} ${item.tags.join(" ")}`.toLowerCase();
-    let score = 0;
-    for (const word of q.split(/\W+/).filter((w) => w.length > 3)) {
-      if (item.pertanyaan.toLowerCase().includes(word)) score += 2;
-      else if (hay.includes(word)) score += 1;
-    }
-    if (q.includes("tunggu") || q.includes("nunggu")) {
-      if (item.tags.includes("tunggu_orang") || item.tags.includes("tunggu_alat")) {
-        score += 5;
-      }
-    }
-    if (q.includes("ulang") || q.includes("diulang") || q.includes("bongkar")) {
-      if (item.tags.includes("ulang_kerja")) score += 5;
-    }
-    if (q.includes("audit") || q.includes("sertifikat") || q.includes("sbu")) {
-      if (item.slug === "apakah-ini-audit") score += 5;
-    }
-    if (
-      (q.includes("whatsapp") || q.includes("bot") || q.includes("faq")) &&
-      item.slug === "bot-dan-whatsapp"
-    ) {
-      score += 5;
-    }
-    if (
-      (q.includes("data") || q.includes("riset") || q.includes("nama")) &&
-      item.slug === "data-saya-dipakai-untuk-apa"
-    ) {
-      score += 4;
-    }
-    return { item, score };
-  });
-  return scored
-    .filter((s) => s.score > 0)
-    .sort((a, b) => b.score - a.score)
+export function findFaqMatches(
+  text: string,
+  items: FaqItem[] = faqItems,
+  limit = 3
+): FaqItem[] {
+  return scoreFaqItems(text, items)
     .slice(0, limit)
     .map((s) => s.item);
 }
@@ -174,8 +143,12 @@ function ringkas(text: string, jenis: JenisMacet): string {
   return `${label[jenis]} ${potong}`.trim();
 }
 
-export function fallbackReply(text: string, coded: BotCodedFields): string {
-  const matches = findFaqMatches(text, 1);
+export function fallbackReply(
+  text: string,
+  coded: BotCodedFields,
+  items: FaqItem[] = faqItems
+): string {
+  const matches = findFaqMatches(text, items, 1);
   const action = findAction(coded.action_kode);
   const parts: string[] = [];
 
@@ -228,8 +201,9 @@ export function toRisetRow(p: ProblemRecord): ProblemRisetRow {
   };
 }
 
-export function botSystemPrompt(): string {
-  const faq = faqItems
+export function botSystemPrompt(items: FaqItem[] = faqItems): string {
+  const faq = items
+    .filter((f) => f.is_published)
     .map((f) => `Q: ${f.pertanyaan}\nA: ${f.jawaban}`)
     .join("\n\n");
   const tips = actionItems

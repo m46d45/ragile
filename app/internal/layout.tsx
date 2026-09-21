@@ -20,6 +20,9 @@ export default function InternalLayout({
             <Link href="/internal/antrian" className="hover:text-primary">
               Antrian WA
             </Link>
+            <Link href="/internal/faq" className="hover:text-primary">
+              FAQ
+            </Link>
             <Link href="/internal/kajian" className="hover:text-primary">
               Kajian
             </Link>

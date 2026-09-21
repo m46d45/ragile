@@ -1,15 +1,20 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/SiteHeader";
-import { faqItems, NON_KLAIM } from "@/lib/clinic";
 import Link from "next/link";
+import { SiteHeader } from "@/components/SiteHeader";
+import { NON_KLAIM } from "@/lib/clinic";
+import { listPublishedFaqs } from "@/lib/store";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "FAQ — RagilE (Ragil Elektronic)",
+  title: "Yang sering ditanya — RagilE",
   description:
-    "Pertanyaan singkat tentang klinik cara kerja lapangan RagilE. Bukan audit, bukan sertifikat.",
+    "Pertanyaan singkat yang sudah ada jawabannya. Daftar ini bertambah setelah ditinjau.",
 };
 
-export default function FaqPage() {
+export default async function FaqPage() {
+  const items = await listPublishedFaqs();
+
   return (
     <div className="min-h-screen bg-gray-50">
       <SiteHeader current="/faq" />
@@ -17,13 +22,14 @@ export default function FaqPage() {
         <p className="text-xs font-medium text-accent uppercase tracking-wide mb-2">
           Umum · tanpa login
         </p>
-        <h1 className="text-2xl font-bold text-primary mb-2">FAQ</h1>
+        <h1 className="text-2xl font-bold text-primary mb-2">Yang sering ditanya</h1>
         <p className="text-sm text-gray-600 mb-8">
-          Belajar sendiri dulu. {NON_KLAIM} Curhat lebih dalam lewat WhatsApp —
-          tidak dibalas otomatis.
+          Daftar awal, akan bertambah kalau banyak yang bertanya hal yang sama.
+          {` ${NON_KLAIM} `}
+          Belum ada di sini? Tanya singkat atau cerita lewat WhatsApp.
         </p>
         <div className="space-y-4">
-          {faqItems.map((item) => (
+          {items.map((item) => (
             <article
               key={item.id}
               id={item.slug}
@@ -35,9 +41,9 @@ export default function FaqPage() {
           ))}
         </div>
         <p className="text-sm text-gray-600 mt-8">
-          Pertanyaan belum ada di sini?{" "}
+          Belum ketemu?{" "}
           <Link href="/tanya" className="text-accent font-semibold">
-            Tanya bot singkat
+            Tanya singkat
           </Link>
           . Kalau ceritanya panjang, lebih baik WhatsApp.
         </p>

@@ -23,7 +23,12 @@ CREATE TABLE IF NOT EXISTS faq_items (
   jawaban TEXT NOT NULL,
   tags TEXT[] NOT NULL DEFAULT '{}',
   urutan INTEGER NOT NULL DEFAULT 0,
-  is_published BOOLEAN NOT NULL DEFAULT TRUE
+  is_published BOOLEAN NOT NULL DEFAULT TRUE,
+  asal TEXT NOT NULL DEFAULT 'seed' CHECK (asal IN ('seed', 'usulan')),
+  kali_dipakai INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  published_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS action_bank (
@@ -114,6 +119,24 @@ CREATE INDEX IF NOT EXISTS problem_bank_tingkat_idx ON problem_bank (tingkat);
 CREATE INDEX IF NOT EXISTS problem_bank_status_idx ON problem_bank (status_alur);
 CREATE INDEX IF NOT EXISTS problem_bank_izin_idx ON problem_bank (izin_anonim);
 CREATE INDEX IF NOT EXISTS problem_bank_jenis_idx ON problem_bank (jenis_macet);
+
+CREATE TABLE IF NOT EXISTS faq_usulan (
+  id UUID PRIMARY KEY,
+  pertanyaan_mentah TEXT NOT NULL,
+  ringkasan TEXT,
+  sumber TEXT NOT NULL CHECK (sumber IN ('web_bot', 'whatsapp', 'manual')),
+  problem_id UUID REFERENCES problem_bank (id),
+  status TEXT NOT NULL CHECK (
+    status IN ('calon', 'ditinjau', 'jadi_faq', 'digabung', 'ditolak')
+  ),
+  mirip_faq_id UUID REFERENCES faq_items (id),
+  faq_id UUID REFERENCES faq_items (id),
+  kali_muncul INTEGER NOT NULL DEFAULT 1,
+  contoh_teks TEXT[] NOT NULL DEFAULT '{}',
+  catatan_tim TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
 
 CREATE TABLE IF NOT EXISTS wa_drafts (
   id UUID PRIMARY KEY,
