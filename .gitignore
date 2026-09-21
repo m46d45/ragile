@@ -10,3 +10,4 @@ data/runtime/*.json
 *.log
 .DS_Store
 next-env.d.ts
+tsconfig.tsbuildinfo
